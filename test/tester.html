@@ -9,22 +9,26 @@
     <script src="../dist/FxaCrypto.deriver.js"></script> <!-- fxa -->
     <script src="../dist/FxaCrypto.relier.js"></script> <!-- notes -->
     <script>
-      console.log(window.FxaCrypto.relier);
-      console.log(window.FxaCrypto.deriver);
+      var derivedKeys = {
+        "https://identity.mozilla.org/apps/notes": {
+          "kid": "<opaque key identifier>",
+          "k": "<notes encryption key, b64url-encoded>",
+          "kty": "oct"
+        }
+      }
 
       var r = new window.FxaCrypto.relier.KeyUtils();
       var d = new window.FxaCrypto.deriver.DeriverUtils();
-      console.log(r)
 
       var RELIER_PUBLIC_KEY;
       var RELIER_PRIVATE_KEY;
 
       r.createApplicationKeyPair()
         .then(function (keys) {
-          console.log('d', d);
+          console.log('keys', keys);
           RELIER_PUBLIC_KEY = keys.jwkPublicKey;
-          RELIER_PRIVATE_KEY = keys.rawPrivateKey;
-          return d.encryptBundle(RELIER_PUBLIC_KEY, 'text') // fxa
+          RELIER_PRIVATE_KEY = keys.jwkPrivateKey;
+          return d.encryptBundle(RELIER_PUBLIC_KEY, JSON.stringify(derivedKeys)) // fxa
 
         })
         .then(function (res) {
