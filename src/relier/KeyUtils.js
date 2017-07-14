@@ -5,39 +5,30 @@
 let jose = require('node-jose');
 
 class KeyUtils {
-  constructor(options = {}) {
+  constructor() {
     this.keystore = null;
   }
 
-  /**
-   *
-   * @returns {Promise.<Object>}
-   */
   createApplicationKeyPair() {
-    var keystore = jose.JWK.createKeyStore();
+    const keystore = jose.JWK.createKeyStore();
 
     return keystore.generate('EC', 'P-256')
       .then((keyPair) => {
         this.keystore = keystore;
 
         return {
-          jwkPublicKey: keyPair.toJSON(),
-          jwkPrivateKey: keyPair.toJSON(true)
+          jwkPublicKey: keyPair.toJSON()
         };
       });
-
   }
 
-  /**
-   *
-   * @param appPrivateKey
-   * @param bundle
-   */
-  decryptBundle(appPrivateKey, bundle) {
-    var jwe = jose.JWE.createDecrypt(this.keystore);
+  decryptBundle(bundle) {
+    if (! this.keystore) {
+      throw new Error('No Key Store. Use .createApplicationKeyPair() to create it first.');
+    }
 
-    console.log('decryptBundle', appPrivateKey, bundle);
-    return jwe.decrypt(bundle)
+    return jose.JWE.createDecrypt(this.keystore)
+      .decrypt(bundle)
       .then((result) => {
         return JSON.parse(jose.util.utf8.encode(result.plaintext));
       });

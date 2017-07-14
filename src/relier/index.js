@@ -1,3 +1,4 @@
 module.exports = {
-  KeyUtils: require('./KeyUtils')
+  KeyUtils: require('./KeyUtils'),
+  OAuthUtils: require('./OAuthUtils'),
 };

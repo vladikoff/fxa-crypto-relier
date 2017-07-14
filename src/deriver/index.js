@@ -1,8 +1,6 @@
-let utils = require('../shared/utils');
-let jose = require('jose-jwe-jws');
+let jose = require('node-jose');
 
 module.exports = {
   DeriverUtils: require('./DeriverUtils'),
-  utils: utils,
   jose: jose
 };
