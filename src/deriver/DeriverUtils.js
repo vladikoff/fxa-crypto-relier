@@ -15,7 +15,7 @@ class DeriverUtils {
 
         var jwe = jose.JWE.createEncrypt({
           format: 'compact',
-          contentAlg: 'A128GCM'
+          contentAlg: 'A256GCM'
         }, recipient);
 
         return jwe.update(bundle)

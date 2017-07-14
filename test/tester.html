@@ -33,6 +33,7 @@
         })
         .then(function (res) {
           console.log('res', res);
+          //var output = window.FxaCrypto.deriver.jose.util.base64url.decode(res.split('.')[0]);
           return r.decryptBundle(RELIER_PRIVATE_KEY, res)
         })
         .then(function (res) {

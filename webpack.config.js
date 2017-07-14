@@ -20,20 +20,14 @@ const MODULE_CONFIG = {
   ]
 };
 
-let relierLibraryName = 'fxa-crypto-relier';
-let deriverLibraryName = 'fxa-crypto-deriver';
-
-let PLUGINS = [], relierOutputFile, deriverOutputFile;
+let PLUGINS = [];
+let min = '';
 
 const UglifyJsPlugin = webpack.optimize.UglifyJsPlugin;
 
 if (env === 'build') {
   PLUGINS.push(new UglifyJsPlugin({ minimize: true }));
-  relierOutputFile = relierLibraryName + '.min.js';
-  deriverOutputFile = deriverLibraryName + '.min.js';
-} else {
-  relierOutputFile = relierLibraryName + '.js';
-  deriverOutputFile = deriverLibraryName + '.js';
+  min = 'min.';
 }
 
 const config = {
@@ -44,7 +38,7 @@ const config = {
     },
     output: {
       path: __dirname + '/dist',
-      filename: 'FxaCrypto.[name].js',
+      filename: `FxaCrypto.[name].${min}js`,
       library: ['FxaCrypto', '[name]'],
       libraryTarget: 'umd',
       umdNamedDefine: true
