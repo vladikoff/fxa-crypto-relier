@@ -17,12 +17,15 @@ class OAuthUtils {
   }
 
   launchFxaScopedKeyFlow(options = {}) {
+    const browserApi = options.browserApi || browser;
     const FXA_OAUTH_SERVER = options.oauth_uri || this.oauthServer;
     const CLIENT_ID = options.client_id; // eslint-disable-line camelcase
-    const SCOPES = options.scopes;
+    const SCOPES = options.scopes || [];
+
     const state = createRandomString(16);
     const codeVerifier = createRandomString(32);
     const queryParams = {
+      access_type: 'offline',
       redirect_uri: options.redirect_uri, // eslint-disable-line camelcase
       client_id: CLIENT_ID, // eslint-disable-line camelcase
       state: state,
@@ -48,7 +51,7 @@ class OAuthUtils {
         const base64JwkPublicKey = jose.util.base64url.encode(JSON.stringify(keyTypes.jwkPublicKey), 'utf8');
         const finalAuth = `${AUTH_URL}&keys_jwk=${base64JwkPublicKey}`;
 
-        return browser.identity.launchWebAuthFlow({
+        return browserApi.identity.launchWebAuthFlow({
           interactive: true,
           url: finalAuth
         }).then(function (redirectURL) {

@@ -3,13 +3,20 @@
   "version": "1.0.0",
   "description": "Scoped Encryption Keys for Firefox Accounts Util Library",
   "scripts": {
-    "build": "webpack && webpack --env build",
+    "build": "webpack && webpack --env build && webpack --env build --config=webpack.config.amd.js",
     "dev": "webpack --progress --colors --watch --env dev",
+    "dev-amd": "webpack --progress --colors --watch --env dev --config=webpack.config.amd.js",
     "test": "mocha --compilers js:babel-core/register --colors ./test/*.spec.js",
-    "test:watch": "mocha --compilers js:babel-core/register --colors -w ./test/*.spec.js"
+    "test:watch": "mocha --compilers js:babel-core/register --colors -w ./test/*.spec.js",
+    "lint": "eslint ."
   },
   "dependencies": {
-    "node-jose": "0.9.4"
+    "base64url": "^2.0.0",
+    "install": "0.10.1",
+    "node-hkdf": "0.0.2",
+    "node-jose": "0.9.4",
+    "npm": "5.3.0",
+    "strftime": "0.10.0"
   },
   "devDependencies": {
     "babel-cli": "6.24.1",
@@ -18,10 +25,10 @@
     "babel-loader": "7.0.0",
     "babel-plugin-add-module-exports": "0.2.1",
     "babel-preset-es2015": "6.24.1",
-    "chai": "3.5.0",
+    "chai": "4.1.0",
     "eslint": "3.19.0",
     "eslint-loader": "1.7.1",
-    "mocha": "3.3.0",
+    "mocha": "3.4.2",
     "webpack": "2.4.1",
     "yargs": "7.1.0"
   },

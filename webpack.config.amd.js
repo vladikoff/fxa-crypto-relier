@@ -2,7 +2,7 @@
 
 const path = require('path');
 
-const env = require('yargs').argv.env; // use --env with webpack 2
+const env  = require('yargs').argv.env; // use --env with webpack 2
 const webpack = require('webpack');
 
 const MODULE_CONFIG = {
@@ -26,41 +26,23 @@ let min = '';
 const UglifyJsPlugin = webpack.optimize.UglifyJsPlugin;
 
 if (env === 'build') {
-  PLUGINS.push(new UglifyJsPlugin({minimize: true}));
+  PLUGINS.push(new UglifyJsPlugin({ minimize: true }));
   min = 'min.';
 }
 
-const config = [
-  {
+const config = {
     entry: {
       deriver: __dirname + '/src/deriver/index.js',
     },
     output: {
       path: __dirname + '/dist',
-      filename: `fxa-crypto-deriver.${min}js`,
+      filename: `fxa-crypto-deriver.amd.${min}js`,
       library: 'fxaCryptoDeriver',
-      libraryTarget: 'umd',
+      libraryTarget: 'amd',
       umdNamedDefine: true
     },
     module: MODULE_CONFIG,
     plugins: PLUGINS
-  },
-  {
-    entry: {
-      relier: __dirname + '/src/relier/index.js'
-    },
-    output: {
-      path: __dirname + '/dist',
-      filename: `fxa-crypto-relier.${min}js`,
-      library: 'fxaCryptoRelier',
-      libraryTarget: 'umd',
-      umdNamedDefine: true
-    },
-    module: MODULE_CONFIG,
-    plugins: PLUGINS
-  }
-
-
-];
+};
 
 module.exports = config;
