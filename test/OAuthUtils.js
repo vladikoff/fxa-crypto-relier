@@ -31,14 +31,12 @@ describe('OAuthKeys', function () {
           return new Promise(function (resolve, reject) {
             const authWindow = window.open(options.url, '_blank', 'location=no,toolbar=no');
             authWindow.addEventListener('loadstart', function(e) {
-              console.log('loadstart')
               var url = e.originalEvent.url;
               var code = /\?code=(.+)$/.exec(url);
               var error = /\?error=(.+)$/.exec(url);
 
               if (code || error) {
                 authWindow.close();
-                console.log(code, error);
                 resolve(url);
               }
 

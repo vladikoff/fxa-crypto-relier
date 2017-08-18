@@ -30,34 +30,36 @@ class ScopedKeys {
       throw new Error('scopedKeyTimestamp required');
     }
 
-    // T
-    // TODO: options.inputKey , should it be a buffer? yes
-    //  var ikm = new Buffer("0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b", 'hex');
-    //  var salt = new Buffer("000102030405060708090a0b0c", 'hex');
-    //  var info = new Buffer("f0f1f2f3f4f5f6f7f8f9", 'hex');
-    debugger
+    const scopedKeySaltBuf = new Buffer(options.scopedKeySalt, 'hex');
+    const inputKeyBuf = new Buffer(options.inputKey, 'hex');
+
     return new Promise((resolve) => {
-      const hkdf = new HKDF('sha256', options.scopedKeySalt, options.inputKey);
+      const hkdf = new HKDF('sha256', scopedKeySaltBuf, inputKeyBuf);
       const context = 'identity.mozilla.com/picl/v1/scoped_key\n' +
         options.scopedKeyIdentifier;
       const contextKid = 'identity.mozilla.com/picl/v1/scoped_kid\n' +
         options.scopedKeyIdentifier;
 
-      hkdf.derive(context, KEY_LENGTH, (key) => {
+      const contextBuf = new Buffer(context);
+
+      hkdf.derive(contextBuf, KEY_LENGTH, (key) => {
         const timestamp = strftime('%Y%m%d%H%M%S', new Date(options.scopedKeyTimestamp));
         const scopedKey = {
           // strftime(scoped_key_timestamp, "YYYYMMDDHHMMSS")
           // "20170101123902"
-          kid: timestamp + '-' + this.deriveKid({
-            // TODO: same call as here, but context is different
-            // contextKid
-          }),
+          // kid: timestamp + '-' + this.deriveKid({
+          //   // TODO: same call as here, but context is different
+          //   // contextKid
+          // }),
+          kid: timestamp + '-TODO',
           k: base64url(key),
           kty: 'oct',
           scope: options.scopedKeyIdentifier,
         };
         // TODO: check if we can load this with webcrypto.
-        resolve(scopedKey);
+        resolve({
+          [options.scopedKeyIdentifier]: scopedKey
+        });
       });
 
     });
