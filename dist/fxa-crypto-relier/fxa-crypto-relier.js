@@ -5041,7 +5041,7 @@ function randomBytes(len) {
 
 util = {
   base64url: __webpack_require__(27),
-  utf8: __webpack_require__(114),
+  utf8: __webpack_require__(117),
   asBuffer: asBuffer,
   randomBytes: randomBytes
 };
@@ -9111,9 +9111,9 @@ Object.keys(CONSTANTS).forEach(function(name) {
 });
 
 // Registered Key Types
-__webpack_require__(105);
-__webpack_require__(106);
-__webpack_require__(104);
+__webpack_require__(108);
+__webpack_require__(109);
+__webpack_require__(107);
 
 
 /***/ }),
@@ -13201,7 +13201,7 @@ module.exports = {
  */
 
 
-var impl = __webpack_require__(117);
+var impl = __webpack_require__(91);
 
 /**
  * @namespace base64url
@@ -15757,18 +15757,18 @@ module.exports = hmac;
 
 // setup implementations
 var implementations = [
-  __webpack_require__(89),
-  __webpack_require__(90),
-  __webpack_require__(31),
-  __webpack_require__(49),
-  __webpack_require__(91),
   __webpack_require__(92),
   __webpack_require__(93),
-  __webpack_require__(50),
-  __webpack_require__(33),
+  __webpack_require__(31),
+  __webpack_require__(49),
   __webpack_require__(94),
   __webpack_require__(95),
   __webpack_require__(96),
+  __webpack_require__(50),
+  __webpack_require__(33),
+  __webpack_require__(97),
+  __webpack_require__(98),
+  __webpack_require__(99),
   __webpack_require__(23)
 ];
 
@@ -15953,8 +15953,8 @@ module.exports = {
 
 
 var JWE = {
-  createEncrypt: __webpack_require__(103).createEncrypt,
-  createDecrypt: __webpack_require__(101).createDecrypt
+  createEncrypt: __webpack_require__(106).createEncrypt,
+  createDecrypt: __webpack_require__(104).createDecrypt
 };
 
 module.exports = JWE;
@@ -15973,8 +15973,8 @@ module.exports = JWE;
 
 
 var JWS = {
-  createSign: __webpack_require__(109).createSign,
-  createVerify: __webpack_require__(110).createVerify
+  createSign: __webpack_require__(112).createSign,
+  createVerify: __webpack_require__(113).createVerify
 };
 
 module.exports = JWS;
@@ -22782,7 +22782,7 @@ var helpers = module.exports = {
 var forge = __webpack_require__(3),
     BigInteger = forge.jsbn.BigInteger,
     ec = __webpack_require__(53),
-    CURVES = __webpack_require__(100);
+    CURVES = __webpack_require__(103);
 
 // ### Helpers
 function hex2bn(s) {
@@ -23509,7 +23509,7 @@ module.exports = {
   JWK: __webpack_require__(15),
   JWS: __webpack_require__(37),
   util: __webpack_require__(5),
-  parse: __webpack_require__(112)
+  parse: __webpack_require__(115)
 };
 
 
@@ -37367,11 +37367,11 @@ var OAuthUtils = function () {
       var state = createRandomString(16);
       var codeVerifier = createRandomString(32);
       var queryParams = {
-        access_type: 'offline',
-        redirect_uri: options.redirect_uri, // eslint-disable-line camelcase
+        access_type: 'offline', // eslint-disable-line camelcase
         client_id: CLIENT_ID, // eslint-disable-line camelcase
-        state: state,
-        scope: encodeURIComponent(SCOPES.join(' '))
+        redirect_uri: options.redirect_uri, // eslint-disable-line camelcase
+        scope: encodeURIComponent(SCOPES.join(' ')),
+        state: state
       };
 
       var AUTH_URL = void 0;
@@ -37515,6 +37515,87 @@ module.exports = {
 
 /***/ }),
 /* 89 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+/* WEBPACK VAR INJECTION */(function(Buffer) {
+var pad_string_1 = __webpack_require__(90);
+function encode(input, encoding) {
+    if (encoding === void 0) { encoding = "utf8"; }
+    if (Buffer.isBuffer(input)) {
+        return fromBase64(input.toString("base64"));
+    }
+    return fromBase64(new Buffer(input, encoding).toString("base64"));
+}
+;
+function decode(base64url, encoding) {
+    if (encoding === void 0) { encoding = "utf8"; }
+    return new Buffer(toBase64(base64url), "base64").toString(encoding);
+}
+function toBase64(base64url) {
+    base64url = base64url.toString();
+    return pad_string_1.default(base64url)
+        .replace(/\-/g, "+")
+        .replace(/_/g, "/");
+}
+function fromBase64(base64) {
+    return base64
+        .replace(/=/g, "")
+        .replace(/\+/g, "-")
+        .replace(/\//g, "_");
+}
+function toBuffer(base64url) {
+    return new Buffer(toBase64(base64url), "base64");
+}
+var base64url = encode;
+base64url.encode = encode;
+base64url.decode = decode;
+base64url.toBase64 = toBase64;
+base64url.fromBase64 = fromBase64;
+base64url.toBuffer = toBuffer;
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.default = base64url;
+
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(0).Buffer))
+
+/***/ }),
+/* 90 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+/* WEBPACK VAR INJECTION */(function(Buffer) {
+function padString(input) {
+    var segmentLength = 4;
+    var stringLength = input.length;
+    var diff = stringLength % segmentLength;
+    if (!diff) {
+        return input;
+    }
+    var position = stringLength;
+    var padLength = segmentLength - diff;
+    var paddedStringLength = stringLength + padLength;
+    var buffer = new Buffer(paddedStringLength);
+    buffer.write(input);
+    while (padLength--) {
+        buffer.write("=", position++);
+    }
+    return buffer.toString();
+}
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.default = padString;
+
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(0).Buffer))
+
+/***/ }),
+/* 91 */
+/***/ (function(module, exports, __webpack_require__) {
+
+module.exports = __webpack_require__(89).default;
+module.exports.default = module.exports;
+
+
+/***/ }),
+/* 92 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -38025,7 +38106,7 @@ module.exports = aesCbcHmacSha2;
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(0).Buffer))
 
 /***/ }),
-/* 90 */
+/* 93 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -38038,7 +38119,7 @@ module.exports = aesCbcHmacSha2;
 
 var helpers = __webpack_require__(6),
     CONSTANTS = __webpack_require__(8),
-    GCM = __webpack_require__(97);
+    GCM = __webpack_require__(100);
 
 function gcmEncryptFN(size) {
   function commonChecks(key, iv) {
@@ -38374,7 +38455,7 @@ module.exports = aesGcm;
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(0).Buffer))
 
 /***/ }),
-/* 91 */
+/* 94 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -38414,7 +38495,7 @@ module.exports = direct;
 
 
 /***/ }),
-/* 92 */
+/* 95 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -38886,7 +38967,7 @@ function ecdhesKwDecryptFn(unwrap) {
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(0).Buffer))
 
 /***/ }),
-/* 93 */
+/* 96 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -39070,7 +39151,7 @@ module.exports = ecdsa;
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(0).Buffer))
 
 /***/ }),
-/* 94 */
+/* 97 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -39414,7 +39495,7 @@ module.exports = pbes2;
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(0).Buffer))
 
 /***/ }),
-/* 95 */
+/* 98 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -39589,7 +39670,7 @@ module.exports = rsaes;
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(0).Buffer))
 
 /***/ }),
-/* 96 */
+/* 99 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -39847,7 +39928,7 @@ module.exports = rsassa;
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(0).Buffer))
 
 /***/ }),
-/* 97 */
+/* 100 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -39860,11 +39941,11 @@ module.exports = rsassa;
 
 var Long = __webpack_require__(38),
     forge = __webpack_require__(3),
-    multipliers = __webpack_require__(98),
+    multipliers = __webpack_require__(101),
     helpers = __webpack_require__(51),
     pack = __webpack_require__(24),
     DataBuffer = __webpack_require__(18),
-    cipherHelpers = __webpack_require__(99);
+    cipherHelpers = __webpack_require__(102);
 
 var BLOCK_SIZE = 16;
 
@@ -40166,7 +40247,7 @@ Gcm.prototype.zeroBlock = function() {
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(0).Buffer))
 
 /***/ }),
-/* 98 */
+/* 101 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -40266,7 +40347,7 @@ module.exports = {
 
 
 /***/ }),
-/* 99 */
+/* 102 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -40294,7 +40375,7 @@ module.exports = {
 
 
 /***/ }),
-/* 100 */
+/* 103 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -40410,7 +40491,7 @@ CURVES["P-521"] = CURVES.secp521r1;
 
 
 /***/ }),
-/* 101 */
+/* 104 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -40771,7 +40852,7 @@ module.exports = {
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(0).Buffer))
 
 /***/ }),
-/* 102 */
+/* 105 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -40816,7 +40897,7 @@ module.exports = JWEDefaults;
 
 
 /***/ }),
-/* 103 */
+/* 106 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -40836,7 +40917,7 @@ var assign = __webpack_require__(58),
     zlib = __webpack_require__(77),
     CONSTANTS = __webpack_require__(8);
 
-var DEFAULTS = __webpack_require__(102);
+var DEFAULTS = __webpack_require__(105);
 
 /**
  * @class JWE.Encrypter
@@ -41460,7 +41541,7 @@ module.exports = {
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(0).Buffer))
 
 /***/ }),
-/* 104 */
+/* 107 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -41874,7 +41955,7 @@ module.exports = Object.freeze({
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(0).Buffer))
 
 /***/ }),
-/* 105 */
+/* 108 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -42105,7 +42186,7 @@ module.exports = Object.freeze({
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(0).Buffer))
 
 /***/ }),
-/* 106 */
+/* 109 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -42478,7 +42559,7 @@ module.exports = Object.freeze({
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(0).Buffer))
 
 /***/ }),
-/* 107 */
+/* 110 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -42510,7 +42591,7 @@ module.exports = JWSDefaults;
 
 
 /***/ }),
-/* 108 */
+/* 111 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -42529,7 +42610,7 @@ module.exports = {
 
 
 /***/ }),
-/* 109 */
+/* 112 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -42545,9 +42626,9 @@ var clone = __webpack_require__(9),
     uniq = __webpack_require__(61),
     util = __webpack_require__(5),
     JWK = __webpack_require__(15),
-    slice = __webpack_require__(108).slice;
+    slice = __webpack_require__(111).slice;
 
-var DEFAULTS = __webpack_require__(107);
+var DEFAULTS = __webpack_require__(110);
 
 /**
  * @class JWS.Signer
@@ -42904,7 +42985,7 @@ module.exports = {
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(0).Buffer))
 
 /***/ }),
-/* 110 */
+/* 113 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -43171,7 +43252,7 @@ module.exports = {
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(0).Buffer))
 
 /***/ }),
-/* 111 */
+/* 114 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -43228,7 +43309,7 @@ module.exports = parseCompact;
 
 
 /***/ }),
-/* 112 */
+/* 115 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -43239,8 +43320,8 @@ module.exports = parseCompact;
  */
 
 
-var compact = __webpack_require__(111),
-    json = __webpack_require__(113);
+var compact = __webpack_require__(114),
+    json = __webpack_require__(116);
 
 var parse = module.exports = function(input) {
   if (Buffer.isBuffer(input)) {
@@ -43261,7 +43342,7 @@ parse.json = json;
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(0).Buffer))
 
 /***/ }),
-/* 113 */
+/* 116 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -43363,7 +43444,7 @@ module.exports = parseJSON;
 
 
 /***/ }),
-/* 114 */
+/* 117 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -43394,87 +43475,6 @@ utf8.decode = function(input) {
 
   return output;
 };
-
-
-/***/ }),
-/* 115 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-/* WEBPACK VAR INJECTION */(function(Buffer) {
-var pad_string_1 = __webpack_require__(116);
-function encode(input, encoding) {
-    if (encoding === void 0) { encoding = "utf8"; }
-    if (Buffer.isBuffer(input)) {
-        return fromBase64(input.toString("base64"));
-    }
-    return fromBase64(new Buffer(input, encoding).toString("base64"));
-}
-;
-function decode(base64url, encoding) {
-    if (encoding === void 0) { encoding = "utf8"; }
-    return new Buffer(toBase64(base64url), "base64").toString(encoding);
-}
-function toBase64(base64url) {
-    base64url = base64url.toString();
-    return pad_string_1.default(base64url)
-        .replace(/\-/g, "+")
-        .replace(/_/g, "/");
-}
-function fromBase64(base64) {
-    return base64
-        .replace(/=/g, "")
-        .replace(/\+/g, "-")
-        .replace(/\//g, "_");
-}
-function toBuffer(base64url) {
-    return new Buffer(toBase64(base64url), "base64");
-}
-var base64url = encode;
-base64url.encode = encode;
-base64url.decode = decode;
-base64url.toBase64 = toBase64;
-base64url.fromBase64 = fromBase64;
-base64url.toBuffer = toBuffer;
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.default = base64url;
-
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(0).Buffer))
-
-/***/ }),
-/* 116 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-/* WEBPACK VAR INJECTION */(function(Buffer) {
-function padString(input) {
-    var segmentLength = 4;
-    var stringLength = input.length;
-    var diff = stringLength % segmentLength;
-    if (!diff) {
-        return input;
-    }
-    var position = stringLength;
-    var padLength = segmentLength - diff;
-    var paddedStringLength = stringLength + padLength;
-    var buffer = new Buffer(paddedStringLength);
-    buffer.write(input);
-    while (padLength--) {
-        buffer.write("=", position++);
-    }
-    return buffer.toString();
-}
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.default = padString;
-
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(0).Buffer))
-
-/***/ }),
-/* 117 */
-/***/ (function(module, exports, __webpack_require__) {
-
-module.exports = __webpack_require__(115).default;
-module.exports.default = module.exports;
 
 
 /***/ }),

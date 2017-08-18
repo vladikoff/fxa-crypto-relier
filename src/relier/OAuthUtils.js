@@ -25,11 +25,11 @@ class OAuthUtils {
     const state = createRandomString(16);
     const codeVerifier = createRandomString(32);
     const queryParams = {
-      access_type: 'offline',
-      redirect_uri: options.redirect_uri, // eslint-disable-line camelcase
+      access_type: 'offline', // eslint-disable-line camelcase
       client_id: CLIENT_ID, // eslint-disable-line camelcase
-      state: state,
+      redirect_uri: options.redirect_uri, // eslint-disable-line camelcase
       scope: encodeURIComponent(SCOPES.join(' ')),
+      state: state
     };
 
     let AUTH_URL;

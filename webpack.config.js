@@ -36,7 +36,7 @@ const config = [
       deriver: __dirname + '/src/deriver/index.js',
     },
     output: {
-      path: __dirname + '/dist',
+      path: __dirname + '/dist/fxa-crypto-relier',
       filename: `fxa-crypto-deriver.${min}js`,
       library: 'fxaCryptoDeriver',
       libraryTarget: 'umd',
@@ -50,7 +50,7 @@ const config = [
       relier: __dirname + '/src/relier/index.js'
     },
     output: {
-      path: __dirname + '/dist',
+      path: __dirname + '/dist/fxa-crypto-relier',
       filename: `fxa-crypto-relier.${min}js`,
       library: 'fxaCryptoRelier',
       libraryTarget: 'umd',
