@@ -4,72 +4,87 @@
 
 const HKDF = require('node-hkdf');
 const base64url = require('base64url');
-const strftime = require('strftime')
+const strftime = require('strftime');
 
-const KEY_CLASS_TAG_B = 'kS';
 const KEY_LENGTH = 32;
 
 class ScopedKeys {
+
   /**
-   *
-   * @param kB - Hex String
-   * @param scopedKeySalt - Hex String
-   * @param scopedKeyIdentifier - Hex String
-   * @returns {Promise} Resolves into key - Hex String
+   * Derive a scoped key
+   * @param options
+   * @param options.inputKey
+   * @param options.scopedKeySalt
+   * @param options.scopedKeyTimestamp
+   * @param options.scopedKeyIdentifier
+   * @returns {Promise}
    */
   deriveScopedKeys(options) {
-    if (! options.inputKey) {
-      throw new Error('inputKey required');
-    }
-
-    if (! options.scopedKeySalt) {
-      throw new Error('scopedKeySalt required');
-    }
-
-    if (! options.scopedKeyTimestamp) {
-      throw new Error('scopedKeyTimestamp required');
-    }
-
-    const scopedKeySaltBuf = new Buffer(options.scopedKeySalt, 'hex');
-    const inputKeyBuf = new Buffer(options.inputKey, 'hex');
-
     return new Promise((resolve) => {
-      const hkdf = new HKDF('sha256', scopedKeySaltBuf, inputKeyBuf);
+      if (! options.inputKey) {
+        throw new Error('inputKey required');
+      }
+
+      if (! options.scopedKeySalt) {
+        throw new Error('scopedKeySalt required');
+      }
+
+      if (! options.scopedKeyTimestamp) {
+        throw new Error('scopedKeyTimestamp required');
+      }
+
+      if (! options.scopedKeyTimestamp) {
+        throw new Error('scopedKeyIdentifier required');
+      }
+
       const context = 'identity.mozilla.com/picl/v1/scoped_key\n' +
         options.scopedKeyIdentifier;
       const contextKid = 'identity.mozilla.com/picl/v1/scoped_kid\n' +
         options.scopedKeyIdentifier;
+      const scopedKey = {
+        kty: 'oct',
+        scope: options.scopedKeyIdentifier,
+      };
 
-      const contextBuf = new Buffer(context);
+      this.deriveHKDF(options.scopedKeySalt, options.inputKey, context)
+        .then((key) => {
+          scopedKey.k = base64url(key);
 
-      hkdf.derive(contextBuf, KEY_LENGTH, (key) => {
-        const timestamp = strftime('%Y%m%d%H%M%S', new Date(options.scopedKeyTimestamp));
-        const scopedKey = {
-          // strftime(scoped_key_timestamp, "YYYYMMDDHHMMSS")
-          // "20170101123902"
-          // kid: timestamp + '-' + this.deriveKid({
-          //   // TODO: same call as here, but context is different
-          //   // contextKid
-          // }),
-          kid: timestamp + '-TODO',
-          k: base64url(key),
-          kty: 'oct',
-          scope: options.scopedKeyIdentifier,
-        };
-        // TODO: check if we can load this with webcrypto.
-        resolve({
-          [options.scopedKeyIdentifier]: scopedKey
+          return this.deriveHKDF(options.scopedKeySalt, options.inputKey, contextKid);
+        })
+        .then((kidKey) => {
+          const timestamp = strftime('%Y%m%d%H%M%S', new Date(options.scopedKeyTimestamp)); // YYYYMMDDHHMMSS timestamp
+
+          scopedKey.kid = timestamp + '-' + base64url(kidKey);
+
+          resolve({
+            [options.scopedKeyIdentifier]: scopedKey
+          });
         });
-      });
-
     });
 
   }
 
-  deriveKid(options) {
+  /**
+   * Derive a key using HKDF
+   * @param scopedKeySalt - Hex string
+   * @param inputKey - Hex string
+   * @param context - String
+   * @returns {Promise}
+   */
+  deriveHKDF(scopedKeySalt, inputKey, context) {
+    return new Promise((resolve) => {
+      const scopedKeySaltBuf = new Buffer(scopedKeySalt, 'hex');
+      const inputKeyBuf = new Buffer(inputKey, 'hex');
+      const contextBuf = new Buffer(context);
+      const hkdf = new HKDF('sha256', scopedKeySaltBuf, inputKeyBuf);
+
+      hkdf.derive(contextBuf, KEY_LENGTH, (key) => {
+        return resolve(key);
+      });
+    });
 
   }
 }
 
 module.exports = ScopedKeys;
-

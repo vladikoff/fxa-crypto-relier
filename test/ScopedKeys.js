@@ -16,6 +16,7 @@ describe('ScopedKeys', function() {
       scopedKeyTimestamp: scopedKeyTimestamp
     })
       .then((key) => {
+        debugger
         assert.equal(key.length, 64);
         done();
       });
