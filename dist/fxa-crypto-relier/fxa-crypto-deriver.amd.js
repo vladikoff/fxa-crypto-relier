@@ -1,14 +1,4 @@
-(function webpackUniversalModuleDefinition(root, factory) {
-	if(typeof exports === 'object' && typeof module === 'object')
-		module.exports = factory();
-	else if(typeof define === 'function' && define.amd)
-		define("fxaCryptoDeriver", [], factory);
-	else if(typeof exports === 'object')
-		exports["fxaCryptoDeriver"] = factory();
-	else
-		root["fxaCryptoDeriver"] = factory();
-})(this, function() {
-return /******/ (function(modules) { // webpackBootstrap
+define("fxaCryptoDeriver", [], function() { return /******/ (function(modules) { // webpackBootstrap
 /******/ 	// The module cache
 /******/ 	var installedModules = {};
 /******/
@@ -101063,5 +101053,4 @@ module.exports = function(arr, obj){
 /* (ignored) */
 
 /***/ })
-/******/ ]);
-});
+/******/ ])});;

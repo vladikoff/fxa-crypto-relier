@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "description": "Scoped Encryption Keys for Firefox Accounts Util Library",
   "scripts": {
-    "build": "webpack && webpack --env build && webpack --env build --config=webpack.config.amd.js",
+    "build": "webpack && webpack --config=webpack.config.amd.js",
     "dev": "webpack --progress --colors --watch --env dev",
     "dev-amd": "webpack --progress --colors --watch --env dev --config=webpack.config.amd.js",
     "test": "mocha --compilers js:babel-core/register --colors ./test/*.spec.js",
@@ -27,6 +27,7 @@
     "chai": "4.1.0",
     "eslint": "3.19.0",
     "eslint-loader": "1.7.1",
+    "http-server": "0.10.0",
     "mocha": "3.4.2",
     "webpack": "2.4.1",
     "yargs": "7.1.0"

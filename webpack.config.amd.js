@@ -23,19 +23,19 @@ const MODULE_CONFIG = {
 let PLUGINS = [];
 let min = '';
 
-const UglifyJsPlugin = webpack.optimize.UglifyJsPlugin;
+//const UglifyJsPlugin = webpack.optimize.UglifyJsPlugin;
 
-if (env === 'build') {
-  PLUGINS.push(new UglifyJsPlugin({ minimize: true }));
-  min = 'min.';
-}
+// if (env === 'build') {
+//   PLUGINS.push(new UglifyJsPlugin({ minimize: true }));
+//   min = 'min.';
+// }
 
 const config = {
     entry: {
       deriver: __dirname + '/src/deriver/index.js',
     },
     output: {
-      path: __dirname + '/dist',
+      path: __dirname + '/dist/fxa-crypto-relier',
       filename: `fxa-crypto-deriver.amd.${min}js`,
       library: 'fxaCryptoDeriver',
       libraryTarget: 'amd',
