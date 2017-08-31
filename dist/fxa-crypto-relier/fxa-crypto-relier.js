@@ -37401,6 +37401,10 @@ var OAuthUtils = function () {
         }).then(function (tokenResult) {
           var bundle = tokenResult.derivedKeyBundle;
 
+          if (!bundle) {
+            throw new Error('Failed to fetch bundle');
+          }
+
           return fxaKeyUtils.decryptBundle(bundle).then(function (keys) {
             delete tokenResult.derivedKeyBundle;
 
