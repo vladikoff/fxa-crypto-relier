@@ -3,7 +3,7 @@ console.log("web-extension - background page loaded");
 function authenticate() {
   const FXA_CLIENT_ID = 'ddd334467337344a';
   const FXA_OAUTH_SERVER = 'http://127.0.0.1:9010/v1'; // can be 'http://127.0.0.1:9010/v1' or remote server
-  const REDIRECT = browser.identity.getRedirectURL(); // https://8c440bedec234155ec8b3ca6d7fdd30e23b94388.extensions.allizom.org
+  const REDIRECT = browser.identity.getRedirectURL(); // "https://cad3e32c651f62062e87b786f04c49bea007c8c3.extensions.allizom.org/"
 
   const fxaKeysUtil = new fxaCryptoRelier.OAuthUtils();
   fxaKeysUtil.launchFxaScopedKeyFlow({

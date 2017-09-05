@@ -37347,78 +37347,6 @@ var jose = __webpack_require__(54);
 
 var fxaKeyUtils = new KeyUtils();
 
-var OAuthUtils = function () {
-  function OAuthUtils() {
-    _classCallCheck(this, OAuthUtils);
-
-    this.oauthServer = 'http://127.0.0.1:9010/v1';
-  }
-
-  _createClass(OAuthUtils, [{
-    key: 'launchFxaScopedKeyFlow',
-    value: function launchFxaScopedKeyFlow() {
-      var options = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
-
-      var browserApi = options.browserApi || browser;
-      var FXA_OAUTH_SERVER = options.oauth_uri || this.oauthServer;
-      var CLIENT_ID = options.client_id; // eslint-disable-line camelcase
-      var SCOPES = options.scopes || [];
-
-      var state = createRandomString(16);
-      var codeVerifier = createRandomString(32);
-      var queryParams = {
-        access_type: 'offline', // eslint-disable-line camelcase
-        client_id: CLIENT_ID, // eslint-disable-line camelcase
-        redirect_uri: options.redirect_uri, // eslint-disable-line camelcase
-        scope: encodeURIComponent(SCOPES.join(' ')),
-        state: state
-      };
-
-      var AUTH_URL = void 0;
-
-      return sha256(codeVerifier).then(function (codeChallenge) {
-
-        if (options.pkce) {
-          queryParams.response_type = 'code'; // eslint-disable-line camelcase
-          queryParams.code_challenge_method = 'S256'; // eslint-disable-line camelcase
-          queryParams.code_challenge = codeChallenge; // eslint-disable-line camelcase
-        }
-
-        AUTH_URL = FXA_OAUTH_SERVER + '/authorization' + objectToQueryString(queryParams);
-
-        return fxaKeyUtils.createApplicationKeyPair();
-      }).then(function (keyTypes) {
-        var base64JwkPublicKey = jose.util.base64url.encode(JSON.stringify(keyTypes.jwkPublicKey), 'utf8');
-        var finalAuth = AUTH_URL + '&keys_jwk=' + base64JwkPublicKey;
-
-        return browserApi.identity.launchWebAuthFlow({
-          interactive: true,
-          url: finalAuth
-        }).then(function (redirectURL) {
-          var code = extractAccessToken(redirectURL);
-
-          return getBearerToken(FXA_OAUTH_SERVER, code, CLIENT_ID, codeVerifier);
-        }).then(function (tokenResult) {
-          var bundle = tokenResult.derivedKeyBundle;
-
-          if (!bundle) {
-            throw new Error('Failed to fetch bundle');
-          }
-
-          return fxaKeyUtils.decryptBundle(bundle).then(function (keys) {
-            delete tokenResult.derivedKeyBundle;
-
-            tokenResult.keys = keys;
-            return tokenResult;
-          });
-        });
-      });
-    }
-  }]);
-
-  return OAuthUtils;
-}();
-
 function getBearerToken(oauthUrl, code, clientId, codeVerifier) {
   var myHeaders = new Headers();
 
@@ -37502,6 +37430,78 @@ function objectToQueryString(obj) {
 
   return '?' + queryParams.join('&');
 }
+
+var OAuthUtils = function () {
+  function OAuthUtils() {
+    _classCallCheck(this, OAuthUtils);
+
+    this.oauthServer = 'http://127.0.0.1:9010/v1';
+  }
+
+  _createClass(OAuthUtils, [{
+    key: 'launchFxaScopedKeyFlow',
+    value: function launchFxaScopedKeyFlow() {
+      var options = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
+
+      var browserApi = options.browserApi || browser;
+      var FXA_OAUTH_SERVER = options.oauth_uri || this.oauthServer;
+      var CLIENT_ID = options.client_id; // eslint-disable-line camelcase
+      var SCOPES = options.scopes || [];
+
+      var state = createRandomString(16);
+      var codeVerifier = createRandomString(32);
+      var queryParams = {
+        access_type: 'offline', // eslint-disable-line camelcase
+        client_id: CLIENT_ID, // eslint-disable-line camelcase
+        redirect_uri: options.redirect_uri, // eslint-disable-line camelcase
+        scope: encodeURIComponent(SCOPES.join(' ')),
+        state: state
+      };
+
+      var AUTH_URL = void 0;
+
+      return sha256(codeVerifier).then(function (codeChallenge) {
+
+        if (options.pkce) {
+          queryParams.response_type = 'code'; // eslint-disable-line camelcase
+          queryParams.code_challenge_method = 'S256'; // eslint-disable-line camelcase
+          queryParams.code_challenge = codeChallenge; // eslint-disable-line camelcase
+        }
+
+        AUTH_URL = FXA_OAUTH_SERVER + '/authorization' + objectToQueryString(queryParams);
+
+        return fxaKeyUtils.createApplicationKeyPair();
+      }).then(function (keyTypes) {
+        var base64JwkPublicKey = jose.util.base64url.encode(JSON.stringify(keyTypes.jwkPublicKey), 'utf8');
+        var finalAuth = AUTH_URL + '&keys_jwk=' + base64JwkPublicKey;
+
+        return browserApi.identity.launchWebAuthFlow({
+          interactive: true,
+          url: finalAuth
+        }).then(function (redirectURL) {
+          var code = extractAccessToken(redirectURL);
+
+          return getBearerToken(FXA_OAUTH_SERVER, code, CLIENT_ID, codeVerifier);
+        }).then(function (tokenResult) {
+          var bundle = tokenResult.derivedKeyBundle;
+
+          if (!bundle) {
+            throw new Error('Failed to fetch bundle');
+          }
+
+          return fxaKeyUtils.decryptBundle(bundle).then(function (keys) {
+            delete tokenResult.derivedKeyBundle;
+
+            tokenResult.keys = keys;
+            return tokenResult;
+          });
+        });
+      });
+    }
+  }]);
+
+  return OAuthUtils;
+}();
 
 module.exports = OAuthUtils;
 

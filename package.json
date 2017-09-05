@@ -8,7 +8,9 @@
     "dev-amd": "webpack --progress --colors --watch --env dev --config=webpack.config.amd.js",
     "test": "mocha --compilers js:babel-core/register --colors ./test/*.spec.js",
     "test:watch": "mocha --compilers js:babel-core/register --colors -w ./test/*.spec.js",
-    "lint": "eslint ."
+    "lint": "eslint .",
+    "precommit": "npm run build",
+    "release": "np"
   },
   "dependencies": {
     "base64url": "^2.0.0",
@@ -28,7 +30,9 @@
     "eslint": "3.19.0",
     "eslint-loader": "1.7.1",
     "http-server": "0.10.0",
+    "husky": "^0.14.3",
     "mocha": "3.4.2",
+    "np": "^2.16.0",
     "webpack": "2.4.1",
     "yargs": "7.1.0"
   },
