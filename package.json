@@ -6,7 +6,7 @@
     "build": "webpack && webpack --config=webpack.config.amd.js",
     "dev": "webpack --progress --colors --watch --env dev",
     "dev-amd": "webpack --progress --colors --watch --env dev --config=webpack.config.amd.js",
-    "test": "npn run lint",
+    "test": "npm run lint",
     "lint": "eslint .",
     "precommit": "npm run build",
     "release": "np"
