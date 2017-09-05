@@ -6,8 +6,7 @@
     "build": "webpack && webpack --config=webpack.config.amd.js",
     "dev": "webpack --progress --colors --watch --env dev",
     "dev-amd": "webpack --progress --colors --watch --env dev --config=webpack.config.amd.js",
-    "test": "mocha --compilers js:babel-core/register --colors ./test/*.spec.js",
-    "test:watch": "mocha --compilers js:babel-core/register --colors -w ./test/*.spec.js",
+    "test": "npn run lint",
     "lint": "eslint .",
     "precommit": "npm run build",
     "release": "np"
