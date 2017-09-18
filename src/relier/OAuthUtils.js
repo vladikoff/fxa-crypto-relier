@@ -116,7 +116,7 @@ class OAuthUtils {
       access_type: 'offline', // eslint-disable-line camelcase
       client_id: CLIENT_ID, // eslint-disable-line camelcase
       redirect_uri: options.redirect_uri, // eslint-disable-line camelcase
-      scope: encodeURIComponent(SCOPES.join(' ')),
+      scope: SCOPES.join(' '),
       state: state
     };
 
