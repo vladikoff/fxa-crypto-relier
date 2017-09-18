@@ -1,6 +1,6 @@
 {
   "name": "fxa-crypto-relier",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Scoped Encryption Keys for Firefox Accounts Util Library",
   "scripts": {
     "build": "webpack && webpack --config=webpack.config.amd.js",
