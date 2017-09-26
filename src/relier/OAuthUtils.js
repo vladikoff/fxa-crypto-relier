@@ -6,10 +6,12 @@
  global browser
  */
 
-const KeyUtils = require('./KeyUtils');
 const jose = require('node-jose');
 
+const KeyUtils = require('./KeyUtils');
 const fxaKeyUtils = new KeyUtils();
+
+const OAUTH_SERVER_URL = 'https://oauth.accounts.firefox.com/v1';
 
 function getBearerToken(oauthUrl, code, clientId, codeVerifier) {
   const myHeaders = new Headers();
@@ -46,16 +48,9 @@ function extractAccessToken(redirectUri) {
 }
 
 function createRandomString(length) {
-  if (length <= 0) {
-    return '';
-  }
-  let _state = '';
-  const possible = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-._~';
+  let buf = new Uint8Array(length);
 
-  for (let i = 0; i < length; i ++) {
-    _state += possible.charAt(Math.floor(Math.random() * possible.length));
-  }
-  return _state;
+  return jose.util.base64url.encode(crypto.getRandomValues(buf)).substr(0, length);
 }
 
 function sha256(str) {
@@ -73,7 +68,7 @@ function sha256(str) {
  *
  * @method createQueryParam
  * @param {String} key
- * @param {Variant} value
+ * @param {String} value
  * @returns {String}
  * URL safe serialized query parameter
  */
@@ -101,7 +96,7 @@ function objectToQueryString(obj) {
 
 class OAuthUtils {
   constructor() {
-    this.oauthServer = 'http://127.0.0.1:9010/v1';
+    this.oauthServer = OAUTH_SERVER_URL;
   }
 
   launchFxaScopedKeyFlow(options = {}) {
@@ -129,6 +124,8 @@ class OAuthUtils {
           queryParams.response_type = 'code'; // eslint-disable-line camelcase
           queryParams.code_challenge_method = 'S256'; // eslint-disable-line camelcase
           queryParams.code_challenge = codeChallenge; // eslint-disable-line camelcase
+        } else {
+          throw new Error('Only Public Client flow is currently supported');
         }
 
         AUTH_URL = FXA_OAUTH_SERVER + '/authorization' + objectToQueryString(queryParams);
@@ -167,5 +164,14 @@ class OAuthUtils {
   }
 
 }
+
+OAuthUtils.__util = {
+  // exposed for testing purposes
+  extractAccessToken: extractAccessToken,
+  createRandomString: createRandomString,
+  sha256: sha256,
+  createQueryParam: createQueryParam,
+  objectToQueryString: objectToQueryString
+};
 
 module.exports = OAuthUtils;

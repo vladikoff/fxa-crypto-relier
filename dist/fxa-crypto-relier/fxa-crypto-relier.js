@@ -37342,10 +37342,12 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
  global browser
  */
 
-var KeyUtils = __webpack_require__(48);
 var jose = __webpack_require__(54);
 
+var KeyUtils = __webpack_require__(48);
 var fxaKeyUtils = new KeyUtils();
+
+var OAUTH_SERVER_URL = 'https://oauth.accounts.firefox.com/v1';
 
 function getBearerToken(oauthUrl, code, clientId, codeVerifier) {
   var myHeaders = new Headers();
@@ -37380,16 +37382,9 @@ function extractAccessToken(redirectUri) {
 }
 
 function createRandomString(length) {
-  if (length <= 0) {
-    return '';
-  }
-  var _state = '';
-  var possible = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-._~';
+  var buf = new Uint8Array(length);
 
-  for (var i = 0; i < length; i++) {
-    _state += possible.charAt(Math.floor(Math.random() * possible.length));
-  }
-  return _state;
+  return jose.util.base64url.encode(crypto.getRandomValues(buf)).substr(0, length);
 }
 
 function sha256(str) {
@@ -37405,7 +37400,7 @@ function sha256(str) {
  *
  * @method createQueryParam
  * @param {String} key
- * @param {Variant} value
+ * @param {String} value
  * @returns {String}
  * URL safe serialized query parameter
  */
@@ -37435,7 +37430,7 @@ var OAuthUtils = function () {
   function OAuthUtils() {
     _classCallCheck(this, OAuthUtils);
 
-    this.oauthServer = 'http://127.0.0.1:9010/v1';
+    this.oauthServer = OAUTH_SERVER_URL;
   }
 
   _createClass(OAuthUtils, [{
@@ -37466,6 +37461,8 @@ var OAuthUtils = function () {
           queryParams.response_type = 'code'; // eslint-disable-line camelcase
           queryParams.code_challenge_method = 'S256'; // eslint-disable-line camelcase
           queryParams.code_challenge = codeChallenge; // eslint-disable-line camelcase
+        } else {
+          throw new Error('Only Public Client flow is currently supported');
         }
 
         AUTH_URL = FXA_OAUTH_SERVER + '/authorization' + objectToQueryString(queryParams);
@@ -37502,6 +37499,15 @@ var OAuthUtils = function () {
 
   return OAuthUtils;
 }();
+
+OAuthUtils.__util = {
+  // exposed for testing purposes
+  extractAccessToken: extractAccessToken,
+  createRandomString: createRandomString,
+  sha256: sha256,
+  createQueryParam: createQueryParam,
+  objectToQueryString: objectToQueryString
+};
 
 module.exports = OAuthUtils;
 
