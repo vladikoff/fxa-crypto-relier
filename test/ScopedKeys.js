@@ -11,8 +11,8 @@ describe('ScopedKeys', function () {
   const scopedKeyTimestamp = 1494446722583; // GMT Wednesday, May 10, 2017 8:05:22.583 PM
   const scopedKeySalt = 'abcdef123456';
 
-  it('should have HKDF work', (done) => {
-    scopedKeys.deriveScopedKeys({
+  it('should have HKDF work', () => {
+    return scopedKeys.deriveScopedKeys({
       inputKey: sampleKb,
       scopedKeySalt: scopedKeySalt,
       scopedKeyTimestamp: scopedKeyTimestamp,
@@ -23,6 +23,7 @@ describe('ScopedKeys', function () {
         const importSpec = {
           name: 'AES-CTR',
         };
+
         assert.equal(k.kty, 'oct');
         assert.equal(k.k.length, 43);
         assert.equal(k.kid, '20170510160522-O-ZDFFfhO2Tzpdag6csDmsRH2a1c9UMKlD0GdouP-5k');
@@ -31,10 +32,9 @@ describe('ScopedKeys', function () {
           assert.equal(rawKey.type, 'secret');
           assert.equal(rawKey.usages[0], 'encrypt');
           assert.equal(rawKey.extractable, false);
-          done();
         }).catch(function (err) {
           console.error(err);
-          done(err);
+          throw err;
         });
       });
 
