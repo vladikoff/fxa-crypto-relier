@@ -26,8 +26,8 @@ describe('OAuthUtils', function () {
         return fxaDeriverUtils.encryptBundle(keysJwk2, JSON.stringify(keySample))
           .then((bundle) => {
             encryptedBundle = bundle;
-            console.log('encryptedBundle', encryptedBundle)
-            return 'wat';
+
+            return 'mock_url';
           });
       }
     }
