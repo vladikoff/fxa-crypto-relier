@@ -26,7 +26,7 @@ describe('ScopedKeys', function () {
 
         assert.equal(k.kty, 'oct');
         assert.equal(k.k.length, 43);
-        assert.equal(k.kid, '20170510160522-O-ZDFFfhO2Tzpdag6csDmsRH2a1c9UMKlD0GdouP-5k');
+        assert.equal(k.kid, '1494446723-O-ZDFFfhO2Tzpdag6csDmsRH2a1c9UMKlD0GdouP-5k');
         assert.equal(k.scope, scopedKeyIdentifier);
         window.crypto.subtle.importKey('jwk', k, importSpec, false, ['encrypt']).then(function (rawKey) {
           assert.equal(rawKey.type, 'secret');
