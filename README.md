@@ -1,4 +1,4 @@
-# fxa-crypto-relier
+# fxa-crypto-relier [![npm version](https://badge.fury.io/js/fxa-crypto-relier.svg)](https://www.npmjs.com/package/fxa-crypto-relier)
 
 Scoped Encryption Keys for Firefox Accounts Util Library
 
