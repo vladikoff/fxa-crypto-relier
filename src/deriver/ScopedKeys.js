@@ -4,7 +4,6 @@
 
 const HKDF = require('node-hkdf');
 const base64url = require('base64url');
-const strftime = require('strftime');
 
 const KEY_LENGTH = 32;
 
@@ -53,9 +52,9 @@ class ScopedKeys {
           return this.deriveHKDF(options.scopedKeySalt, options.inputKey, contextKid);
         })
         .then((kidKey) => {
-          const timestamp = strftime('%Y%m%d%H%M%S', new Date(options.scopedKeyTimestamp)); // YYYYMMDDHHMMSS timestamp
+          const keyTimestamp = Math.round(options.scopedKeyTimestamp / 1000);
 
-          scopedKey.kid = timestamp + '-' + base64url(kidKey);
+          scopedKey.kid = keyTimestamp + '-' + base64url(kidKey);
 
           resolve({
             [options.scopedKeyIdentifier]: scopedKey

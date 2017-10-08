@@ -37428,18 +37428,22 @@ function objectToQueryString(obj) {
 
 var OAuthUtils = function () {
   function OAuthUtils() {
+    var options = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
+
     _classCallCheck(this, OAuthUtils);
 
-    this.oauthServer = OAUTH_SERVER_URL;
+    this.oauthServer = options.oauth_uri || OAUTH_SERVER_URL;
   }
 
   _createClass(OAuthUtils, [{
     key: 'launchFxaScopedKeyFlow',
     value: function launchFxaScopedKeyFlow() {
+      var _this = this;
+
       var options = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
 
       var browserApi = options.browserApi || browser;
-      var FXA_OAUTH_SERVER = options.oauth_uri || this.oauthServer;
+      var getBearerTokenRequest = options.getBearerTokenRequest || getBearerToken;
       var CLIENT_ID = options.client_id; // eslint-disable-line camelcase
       var SCOPES = options.scopes || [];
 
@@ -37465,7 +37469,7 @@ var OAuthUtils = function () {
           throw new Error('Only Public Client flow is currently supported');
         }
 
-        AUTH_URL = FXA_OAUTH_SERVER + '/authorization' + objectToQueryString(queryParams);
+        AUTH_URL = _this.oauthServer + '/authorization' + objectToQueryString(queryParams);
 
         return fxaKeyUtils.createApplicationKeyPair();
       }).then(function (keyTypes) {
@@ -37478,7 +37482,7 @@ var OAuthUtils = function () {
         }).then(function (redirectURL) {
           var code = extractAccessToken(redirectURL);
 
-          return getBearerToken(FXA_OAUTH_SERVER, code, CLIENT_ID, codeVerifier);
+          return getBearerTokenRequest(_this.oauthServer, code, CLIENT_ID, codeVerifier);
         }).then(function (tokenResult) {
           var bundle = tokenResult.derivedKeyBundle;
 
