@@ -37356,12 +37356,14 @@ var OAuthUtils = function () {
 
     _classCallCheck(this, OAuthUtils);
 
-    this.oauthServer = options.oauth_uri || OAUTH_SERVER_URL;
+    this.oauthServer = options.oauthServer || OAUTH_SERVER_URL;
   }
 
   _createClass(OAuthUtils, [{
     key: 'launchFxaScopedKeyFlow',
     value: function launchFxaScopedKeyFlow() {
+      var _this = this;
+
       var options = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
 
       var browserApi = options.browserApi || browser;
@@ -37404,16 +37406,16 @@ var OAuthUtils = function () {
         }).then(function (redirectURL) {
           var code = util.extractAccessToken(redirectURL);
 
-          return getBearerTokenRequest(code, clientId, codeVerifier);
+          return getBearerTokenRequest(_this.oauthServer, code, clientId, codeVerifier);
         }).then(function (tokenResult) {
-          var bundle = tokenResult.derivedKeyBundle;
+          var bundle = tokenResult.keys_jwe;
 
           if (!bundle) {
             throw new Error('Failed to fetch bundle');
           }
 
           return fxaKeyUtils.decryptBundle(bundle).then(function (keys) {
-            delete tokenResult.derivedKeyBundle;
+            delete tokenResult.keys_jwe;
 
             tokenResult.keys = keys;
             return tokenResult;
@@ -37423,15 +37425,15 @@ var OAuthUtils = function () {
     }
   }, {
     key: '_getBearerTokenRequest',
-    value: function _getBearerTokenRequest(code, clientId, codeVerifier) {
-      var options = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : {};
+    value: function _getBearerTokenRequest(server, code, clientId, codeVerifier) {
+      var options = arguments.length > 4 && arguments[4] !== undefined ? arguments[4] : {};
 
       var fetchInterface = options.fetch || fetch;
       var headers = new Headers();
 
       headers.append('Content-Type', 'application/json');
 
-      var request = new Request(this.oauthServer + '/token', {
+      var request = new Request(server + '/token', {
         method: 'POST',
         headers: headers,
         body: JSON.stringify({

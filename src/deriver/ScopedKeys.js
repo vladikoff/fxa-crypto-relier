@@ -13,9 +13,9 @@ class ScopedKeys {
    * Derive a scoped key
    * @param options
    * @param options.inputKey
-   * @param options.scopedKeySalt
-   * @param options.scopedKeyTimestamp
-   * @param options.scopedKeyIdentifier
+   * @param options.keyMaterial
+   * @param options.timestamp
+   * @param options.identifier
    * @returns {Promise}
    */
   deriveScopedKeys(options) {
@@ -24,40 +24,40 @@ class ScopedKeys {
         throw new Error('inputKey required');
       }
 
-      if (! options.scopedKeySalt) {
-        throw new Error('scopedKeySalt required');
+      if (! options.keyMaterial) {
+        throw new Error('keyMaterial required');
       }
 
-      if (! options.scopedKeyTimestamp) {
-        throw new Error('scopedKeyTimestamp required');
+      if (! options.timestamp) {
+        throw new Error('timestamp required');
       }
 
-      if (! options.scopedKeyTimestamp) {
-        throw new Error('scopedKeyIdentifier required');
+      if (! options.identifier) {
+        throw new Error('identifier required');
       }
 
       const context = 'identity.mozilla.com/picl/v1/scoped_key\n' +
-        options.scopedKeyIdentifier;
+        options.identifier;
       const contextKid = 'identity.mozilla.com/picl/v1/scoped_kid\n' +
-        options.scopedKeyIdentifier;
+        options.identifier;
       const scopedKey = {
         kty: 'oct',
-        scope: options.scopedKeyIdentifier,
+        scope: options.identifier,
       };
 
-      this.deriveHKDF(options.scopedKeySalt, options.inputKey, context)
+      this.deriveHKDF(options.keyMaterial, options.inputKey, context)
         .then((key) => {
           scopedKey.k = base64url(key);
 
-          return this.deriveHKDF(options.scopedKeySalt, options.inputKey, contextKid);
+          return this.deriveHKDF(options.keyMaterial, options.inputKey, contextKid);
         })
         .then((kidKey) => {
-          const keyTimestamp = Math.round(options.scopedKeyTimestamp / 1000);
+          const keyTimestamp = Math.round(options.timestamp / 1000);
 
           scopedKey.kid = keyTimestamp + '-' + base64url(kidKey);
 
           resolve({
-            [options.scopedKeyIdentifier]: scopedKey
+            [options.identifier]: scopedKey
           });
         });
     });
@@ -66,17 +66,17 @@ class ScopedKeys {
 
   /**
    * Derive a key using HKDF
-   * @param scopedKeySalt - Hex string
+   * @param keyMaterial - Hex string
    * @param inputKey - Hex string
    * @param context - String
    * @returns {Promise}
    */
-  deriveHKDF(scopedKeySalt, inputKey, context) {
+  deriveHKDF(keyMaterial, inputKey, context) {
     return new Promise((resolve) => {
-      const scopedKeySaltBuf = new Buffer(scopedKeySalt, 'hex');
+      const keyMaterialBuf = new Buffer(keyMaterial, 'hex');
       const inputKeyBuf = new Buffer(inputKey, 'hex');
       const contextBuf = new Buffer(context);
-      const hkdf = new HKDF('sha256', scopedKeySaltBuf, inputKeyBuf);
+      const hkdf = new HKDF('sha256', keyMaterialBuf, inputKeyBuf);
 
       hkdf.derive(contextBuf, KEY_LENGTH, (key) => {
         return resolve(key);

@@ -16,7 +16,7 @@ const OAUTH_SERVER_URL = 'https://oauth.accounts.firefox.com/v1';
 
 class OAuthUtils {
   constructor(options = {}) {
-    this.oauthServer = options.oauth_uri || OAUTH_SERVER_URL;
+    this.oauthServer = options.oauthServer || OAUTH_SERVER_URL;
   }
 
   launchFxaScopedKeyFlow(options = {}) {
@@ -62,10 +62,10 @@ class OAuthUtils {
         }).then((redirectURL) => {
           const code = util.extractAccessToken(redirectURL);
 
-          return getBearerTokenRequest(code, clientId, codeVerifier);
+          return getBearerTokenRequest(this.oauthServer, code, clientId, codeVerifier);
         })
           .then((tokenResult) => {
-            const bundle = tokenResult.derivedKeyBundle;
+            const bundle = tokenResult.keys_jwe;
 
             if (! bundle) {
               throw new Error('Failed to fetch bundle');
@@ -73,7 +73,7 @@ class OAuthUtils {
 
             return fxaKeyUtils.decryptBundle(bundle)
               .then(function (keys) {
-                delete tokenResult.derivedKeyBundle;
+                delete tokenResult.keys_jwe;
 
                 tokenResult.keys = keys;
                 return tokenResult;
@@ -82,13 +82,13 @@ class OAuthUtils {
       });
   }
 
-  _getBearerTokenRequest(code, clientId, codeVerifier, options = {}) {
+  _getBearerTokenRequest(server, code, clientId, codeVerifier, options = {}) {
     const fetchInterface = options.fetch || fetch;
     const headers = new Headers();
 
     headers.append('Content-Type', 'application/json');
 
-    const request = new Request(`${this.oauthServer}/token`, {
+    const request = new Request(`${server}/token`, {
       method: 'POST',
       headers: headers,
       body: JSON.stringify({
