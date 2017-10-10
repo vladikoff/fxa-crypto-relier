@@ -6,7 +6,7 @@ var assert = chai.assert;
 
 describe('OAuthUtils', function () {
   let keysJwk;
-  let encryptedBundle;
+  let keysJwe;
   let exampleScope = 'https://identity.mozilla.org/apps/notes';
   let keySample = {
     [exampleScope]: {
@@ -27,7 +27,7 @@ describe('OAuthUtils', function () {
 
         return fxaDeriverUtils.encryptBundle(keysJwk2, JSON.stringify(keySample))
           .then((bundle) => {
-            encryptedBundle = bundle;
+            keysJwe = bundle;
 
             return 'mock_url';
           });
@@ -38,7 +38,7 @@ describe('OAuthUtils', function () {
   const getBearerTokenRequest = function () {
     return new Promise((resolve) => {
       resolve({
-        derivedKeyBundle: encryptedBundle
+        keys_jwe: keysJwe // eslint-disable-line camelcase
       });
     });
   };
