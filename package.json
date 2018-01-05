@@ -15,7 +15,7 @@
     "base64url": "^2.0.0",
     "install": "0.10.1",
     "node-hkdf": "0.0.2",
-    "node-jose": "0.9.4"
+    "node-jose": "0.11.0"
   },
   "devDependencies": {
     "babel-cli": "6.24.1",
